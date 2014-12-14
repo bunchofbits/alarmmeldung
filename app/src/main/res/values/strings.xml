@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Alarmmeldung</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="send">Senden</string>
+    <string name="send_to">Senden an</string>
+    <string name="group">Gruppe</string>
+    <string name="message">Nachricht</string>
+    <string name="std_group">Standardgruppe</string>
+    <string name="std_msg">Standardnachricht</string>
+    <string name="edit_groups">Gruppen bearbeiten</string>
+    <string name="edit_group">Gruppe bearbeiten</string>
+    <string name="edit_messages">Nachrichten bearbeiten</string>
+    <string name="edit_message">Nachricht bearbeiten</string>
+    <string name="add_message">Nachricht hinzufügen</string>
+    <string name="add_group">Gruppe hinzufügen</string>
+    <string name="back">Zurück</string>
+    <string name="delete_qst">Wirklich löschen ?</string>
+    <string name="delete">Löschen</string>
+    <string name="save">Speichern</string>
+    <string name="no">Nein</string>
+    <string name="no_text_entered">Kein Text eingegeben</string>
+    <string name="no_messages_added">Keine Nachrichten angelegt</string>
+    <string name="delete_message_qst">Soll die Nachricht wirklich gelöscht werden?</string>
+    <string name="delete_group_qst">Soll die Gruppe wirklich gelöscht werden?</string>
+    <string name="abort">Abbrechen</string>
+    <string name="no_groups_added">Keine Gruppen angelegt</string>
+
+</resources>
