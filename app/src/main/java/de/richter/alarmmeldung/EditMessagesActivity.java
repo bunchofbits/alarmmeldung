@@ -182,7 +182,7 @@ public class EditMessagesActivity extends ListActivity {
     private void dlgDelMsgOnClick(){
         DatabaseHelper dbh = new DatabaseHelper(this);
         Log.i(MainActivity.TAG, "Deleting Message" + msgToWork);
-        dbh.deleteMessageByID(msgToWork.getId());
+        dbh.deleteMessage(msgToWork);
         update_list_view();
     }
 

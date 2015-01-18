@@ -57,20 +57,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + MEM_GRP_COL_GRP + " INTEGER NOT NULL"
             + " )";
 
-    public static final String MESSAGE_TBL_NAME = "messages";
-    public static final String MESSAGE_COL_ID = "ID";
-    public static final String MESSAGE_COL_MESSAGE = "message";
-    public static final String MESSAGE_TBL_CREATE = "CREATE TABLE IF NOT EXISTS "
-            + MESSAGE_TBL_NAME + " ( "
-            + MESSAGE_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + MESSAGE_COL_MESSAGE + " VARCHAR NOT NULL"
-            + " )";
-
     Context context;
+    MessagesHelper messagesHelper;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
+        this.messagesHelper = new MessagesHelper(context);
+    }
+
+    public static void LogExec(String TAG, String sql) {
+        Log.d(DatabaseHelper.TAG + " - " + TAG, "Executing: " + sql);
     }
 
     @Override
@@ -87,9 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "executing '" + MEM_GRP_TBL_CREATE + "' ");
         db.execSQL(MEM_GRP_TBL_CREATE);
 
-        Log.i(TAG, "creating Table " + MESSAGE_TBL_NAME);
-        Log.d(TAG, "executing '" + MESSAGE_TBL_CREATE + "' ");
-        db.execSQL(MESSAGE_TBL_CREATE);
+        messagesHelper.onCreate(db);
     }
 
     @Override
@@ -110,11 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void addMessage(Message msg) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues vals = new ContentValues();
-        vals.put(MESSAGE_COL_MESSAGE, msg.getMessage());
-
-        Log.d(TAG, "Inserting Message '" + msg.getMessage() + "'");
-        db.insert(MESSAGE_TBL_NAME, null, vals);
+        messagesHelper.addMessage(msg, db);
         db.close();
     }
 
@@ -155,25 +146,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<Message> getAllMessages() {
-        ArrayList<Message> msgs;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor;
-
-        cursor = db.query(MESSAGE_TBL_NAME, new String[]{MESSAGE_COL_ID, MESSAGE_COL_MESSAGE}, null, null, null, null, MESSAGE_COL_ID);
-        if (!cursor.moveToFirst()) {
-            db.close();
-            return null;
-        }
-
-        msgs = new ArrayList<Message>();
-        do {
-            msgs.add(new Message(
-                    Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(MESSAGE_COL_ID))),
-                    cursor.getString(cursor.getColumnIndexOrThrow(MESSAGE_COL_MESSAGE))));
-        } while (cursor.moveToNext());
-
+        ArrayList<Message> messages;
+        messages = messagesHelper.getAllMessages(db);
         db.close();
-        return msgs;
+        return messages;
     }
 
     public ArrayList<Group> getAllGroups() {
@@ -314,14 +291,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void updateMessage(Message new_msg) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues vals = new ContentValues();
-        vals.put(MESSAGE_COL_MESSAGE, new_msg.getMessage());
-        String cmd =
-                "UPDATE " + MESSAGE_TBL_NAME +
-                        " SET " + MESSAGE_COL_MESSAGE + " = '" + new_msg.getMessage() + "'" +
-                        " WHERE " + MESSAGE_COL_ID + " = " + new_msg.getId();
-        Log.d(TAG, "Executing: " + cmd);
-        db.execSQL(cmd);
+        if (!messagesHelper.updateMessage(new_msg, db)) {
+            Toast.makeText(this.context, "Error updating Message!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 
@@ -357,11 +329,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteMessageByID(int ID) {
+    public void deleteMessage(Message message) {
         SQLiteDatabase db = getWritableDatabase();
-        String del_Str = "DELETE FROM " + MESSAGE_TBL_NAME + " WHERE " + MESSAGE_COL_ID + " = " + ID;
-        Log.d(TAG, "Executing: " + del_Str);
-        db.execSQL(del_Str);
+        if (!messagesHelper.deleteMessage(message, db)) {
+            Toast.makeText(this.context, "Error deleting Message!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 
