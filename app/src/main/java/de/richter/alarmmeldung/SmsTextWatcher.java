@@ -31,6 +31,6 @@ public class SmsTextWatcher implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable editable) {
-        show_remain_chars_vw.setText(recalculate_remaining_chars(editable));
+        this.show_remain_chars_vw.setText(recalculate_remaining_chars(editable));
     }
 }
