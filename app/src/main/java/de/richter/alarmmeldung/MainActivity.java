@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import de.richter.alarmmeldung.database.DatabaseHelper;
+
 public class MainActivity extends Activity {
 
     public static final String TAG = "Alarmmeldung";
@@ -85,6 +87,7 @@ public class MainActivity extends Activity {
     }
 
     private void update_messages(){
+        ArrayAdapter<String> adapter;
         Spinner msgSpn = (Spinner) findViewById(R.id.msg_spn);
         DatabaseHelper dbh = new DatabaseHelper(this);
         ArrayList<Message> messages = dbh.getAllMessages();
@@ -97,13 +100,14 @@ public class MainActivity extends Activity {
             for (int i = 0; i < messages.size(); i++)
                 messagesForAdapter.add(messages.get(i).getMessage());
 
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, messagesForAdapter);
+            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, messagesForAdapter);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             msgSpn.setAdapter(adapter);
         }
     }
 
     private void update_groups(){
+        ArrayAdapter<String> adapter;
         Spinner grpSpn = (Spinner) findViewById(R.id.grp_spn);
         DatabaseHelper dbh = new DatabaseHelper(this);
         ArrayList<Group> groups = dbh.getAllGroups();
@@ -116,7 +120,7 @@ public class MainActivity extends Activity {
             for(int i = 0; i < groups.size(); i++)
                 groupsForAdapter.add(groups.get(i).getName());
 
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, groupsForAdapter);
+            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, groupsForAdapter);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             grpSpn.setAdapter(adapter);
         }
