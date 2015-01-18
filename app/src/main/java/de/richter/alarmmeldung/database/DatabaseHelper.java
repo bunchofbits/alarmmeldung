@@ -35,16 +35,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + MEMBER_COL_NUMBER + " VARCHAR NOT NULL UNIQUE"
             + " )";
 
-    // Group Table
-    public static final String GROUP_TBL_NAME = "groups";
-    public static final String GROUP_COL_ID = "ID";
-    public static final String GROUP_COL_NAME = "name";
-    public static final String GROUP_TBL_CREATE = "CREATE TABLE IF NOT EXISTS "
-            + GROUP_TBL_NAME + " ( "
-            + GROUP_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + GROUP_COL_NAME + " VARCHAR NOT NULL"
-            + " )";
-
     // Member - Group Correlation Table
     public static final String MEM_GRP_TBL_NAME = "member_group_corr";
     public static final String MEM_GRP_COL_ID = "ID";
@@ -59,15 +49,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     Context context;
     MessagesHelper messagesHelper;
+    GroupsHelper groupsHelper;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
         this.messagesHelper = new MessagesHelper(context);
+        this.groupsHelper = new GroupsHelper(context);
     }
 
     public static void LogExec(String TAG, String sql) {
-        Log.d(DatabaseHelper.TAG + " - " + TAG, "Executing: " + sql);
+        Log.d(TAG, "Executing: " + sql);
     }
 
     @Override
@@ -76,15 +68,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "executing '" + MEMBER_TBL_CREATE + "' ");
         db.execSQL(MEMBER_TBL_CREATE);
 
-        Log.i(TAG, "creating Table " + GROUP_TBL_NAME);
-        Log.d(TAG, "executing '" + GROUP_TBL_CREATE + "' ");
-        db.execSQL(GROUP_TBL_CREATE);
+        groupsHelper.createTable(db);
 
         Log.i(TAG, "creating Table " + MEM_GRP_TBL_NAME);
         Log.d(TAG, "executing '" + MEM_GRP_TBL_CREATE + "' ");
         db.execSQL(MEM_GRP_TBL_CREATE);
 
-        messagesHelper.onCreate(db);
+        messagesHelper.createTable(db);
     }
 
     @Override
@@ -94,28 +84,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i(TAG, "Dropping table " + MEMBER_TBL_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MEMBER_TBL_NAME);
 
-        Log.i(TAG, "Dropping table " + GROUP_TBL_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + GROUP_TBL_NAME);
+        groupsHelper.dropTable(db);
 
         Log.i(TAG, "Dropping table " + MEM_GRP_TBL_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MEM_GRP_TBL_NAME);
 
+        messagesHelper.dropTable(db);
         onCreate(db);
     }
 
     public void addMessage(Message msg) {
         SQLiteDatabase db = getWritableDatabase();
-        messagesHelper.addMessage(msg, db);
+        if (!messagesHelper.addMessage(msg, db)) {
+            Toast.makeText(context, "Error adding Message!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 
     public void addGroup(Group group) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(GROUP_COL_NAME, group.getName());
-
-        db.insert(GROUP_TBL_NAME, null, values);
-
+        if (!groupsHelper.addGroup(group, db)) {
+            Toast.makeText(context, "Error adding Group!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 
@@ -154,24 +144,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<Group> getAllGroups() {
-        ArrayList<Group> groups;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor curs;
-
-        curs = db.query(GROUP_TBL_NAME, new String[]{GROUP_COL_ID, GROUP_COL_NAME}, null, null, null, null, GROUP_COL_ID);
-        if (!curs.moveToFirst()) {
-            db.close();
-            return null;
-        }
-        groups = new ArrayList<Group>();
-        do {
-            Group grp = new Group(
-                    Integer.parseInt(curs.getString(curs.getColumnIndexOrThrow(GROUP_COL_ID))),
-                    curs.getString(curs.getColumnIndexOrThrow(GROUP_COL_NAME))
-            );
-            groups.add(grp);
-
-        } while (curs.moveToNext());
+        ArrayList<Group> groups = groupsHelper.getAllGroups(db);
         db.close();
         return groups;
     }
@@ -204,21 +178,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Group getGroupByID(int id) {
         SQLiteDatabase db = getReadableDatabase();
-        Group group;
-        Cursor curs;
-        String sql = "SELECT * FROM " + GROUP_TBL_NAME + " WHERE " + GROUP_COL_ID + " = '" + id + "'";
-
-        curs = db.rawQuery(sql, null);
-
-        if (!curs.moveToFirst()) {
-            db.close();
-            return null;
-        }
-
-        group = new Group(
-                Integer.parseInt(curs.getString(curs.getColumnIndexOrThrow(GROUP_COL_ID))),
-                curs.getString(curs.getColumnIndexOrThrow(GROUP_COL_NAME))
-        );
+        Group group = groupsHelper.getGroupByID(id, db);
+        db.close();
         return group;
     }
 
@@ -231,14 +192,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor curs;
         ArrayList<Member> member;
         String sql = "SELECT " +
-                GROUP_TBL_NAME + "." + GROUP_COL_ID + ", " +
-                GROUP_TBL_NAME + "." + GROUP_COL_NAME + ", " +
+                groupsHelper.GROUP_TBL_NAME + "." + groupsHelper.GROUP_COL_ID + ", " +
+                groupsHelper.GROUP_TBL_NAME + "." + groupsHelper.GROUP_COL_NAME + ", " +
                 MEMBER_TBL_NAME + "." + MEMBER_COL_ID + ", " +
                 MEMBER_TBL_NAME + "." + MEMBER_COL_NAME + ", " +
                 MEMBER_TBL_NAME + "." + MEMBER_COL_NUMBER +
                 " FROM " + MEM_GRP_TBL_NAME +
                 " JOIN " + MEMBER_TBL_NAME + " ON " + MEM_GRP_COL_MEM + " = " + MEMBER_TBL_NAME + "." + MEMBER_COL_ID +
-                " JOIN " + GROUP_TBL_NAME + " ON " + MEM_GRP_COL_GRP + " = " + GROUP_TBL_NAME + "." + GROUP_COL_ID +
+                " JOIN " + groupsHelper.GROUP_TBL_NAME + " ON " + MEM_GRP_COL_GRP + " = " + groupsHelper.GROUP_TBL_NAME + "." + groupsHelper.GROUP_COL_ID +
                 " AND " + MEM_GRP_COL_GRP + " = " + group.getId();
 
         if (group == null) {
@@ -299,15 +260,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void updateGroup(Group new_grp) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues vals = new ContentValues();
-        vals.put(GROUP_COL_NAME, new_grp.getName());
-        String cmd =
-                "UPDATE " + GROUP_TBL_NAME +
-                        " SET " + GROUP_COL_NAME + " = '" + new_grp.getName() + "'" +
-                        " WHERE " + GROUP_COL_ID + " = " + new_grp.getId();
-
-        Log.d(TAG, "Executing: " + cmd);
-        db.execSQL(cmd);
+        if (!groupsHelper.updateGroup(new_grp, db)) {
+            Toast.makeText(context, "Error updating Group!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 
@@ -322,7 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         MEMBER_COL_NAME + " = '" + new_member.getName() + "', " +
                         MEMBER_COL_NUMBER + " = '" + new_member.getNumber() + "'" +
                         " WHERE " +
-                        GROUP_COL_ID + " = " + new_member.getId();
+                        GroupsHelper.GROUP_COL_ID + " = " + new_member.getId();
 
         Log.d(TAG, "Executing: " + cmd);
         db.execSQL(cmd);
@@ -337,13 +292,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteGroup(int ID) {
-        SQLiteDatabase db;
-        String sql;
-        db = getWritableDatabase();
-        sql = "DELETE FROM " + GROUP_TBL_NAME + " WHERE " + GROUP_COL_ID + " = " + ID;
-        Log.d(TAG, "Executing: " + sql);
-        db.execSQL(sql);
+    public void deleteGroup(Group group) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (!groupsHelper.deleteGroup(group, db)) {
+            Toast.makeText(context, "Error deleting Group!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 

@@ -11,13 +11,13 @@ import java.util.ArrayList;
 
 import de.richter.alarmmeldung.Message;
 
-class MessagesHelper {
+public class MessagesHelper {
 
     public static final String TAG = "MessagesHelper";
-    protected static final String MESSAGE_TBL_NAME = "messages";
-    protected static final String MESSAGE_COL_ID = "ID";
-    protected static final String MESSAGE_COL_MESSAGE = "message";
-    protected static final String MESSAGE_TBL_CREATE = "CREATE TABLE IF NOT EXISTS "
+    public static final String MESSAGE_TBL_NAME = "messages";
+    public static final String MESSAGE_COL_ID = "ID";
+    public static final String MESSAGE_COL_MESSAGE = "message";
+    public static final String MESSAGE_TBL_CREATE = "CREATE TABLE IF NOT EXISTS "
             + MESSAGE_TBL_NAME + " ( "
             + MESSAGE_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + MESSAGE_COL_MESSAGE + " VARCHAR NOT NULL"
@@ -26,23 +26,34 @@ class MessagesHelper {
     Context context;
     SQLiteDatabase database;
 
-    protected MessagesHelper(Context context) {
+    public MessagesHelper(Context context) {
         this.context = context;
         database = null;
     }
 
-    protected void onCreate(SQLiteDatabase db) {
+    public void createTable(SQLiteDatabase db) {
         Log.i(TAG, "creating Table " + MESSAGE_TBL_NAME);
         DatabaseHelper.LogExec(TAG, MESSAGE_TBL_CREATE);
         db.execSQL(MESSAGE_TBL_CREATE);
     }
 
-    public void addMessage(Message msg, SQLiteDatabase db) {
+    public void dropTable(SQLiteDatabase db) {
+        Log.i(TAG, "Dropping table " + MESSAGE_TBL_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + MESSAGE_TBL_NAME);
+    }
+
+    public boolean addMessage(Message msg, SQLiteDatabase db) {
+        boolean ret = true;
         ContentValues vals = new ContentValues();
         vals.put(MESSAGE_COL_MESSAGE, msg.getMessage());
-
-        Log.d(TAG, "Inserting Message '" + msg.getMessage() + "'");
-        db.insert(MESSAGE_TBL_NAME, null, vals);
+        try {
+            Log.d(TAG, "Inserting Message '" + msg.getMessage() + "'");
+            db.insert(MESSAGE_TBL_NAME, null, vals);
+        } catch (SQLException ex) {
+            Log.e(TAG, "Error inserting new message!\n" + ex.getMessage());
+            ret = false;
+        }
+        return ret;
     }
 
     public ArrayList<Message> getAllMessages(SQLiteDatabase db) {

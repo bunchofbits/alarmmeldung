@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +22,12 @@ import de.richter.alarmmeldung.database.DatabaseHelper;
 
 public class EditGroupsActivity extends ExpandableListActivity {
 
+    public static final String TAG = "EditGroupsActivity";
     public static final int GET_CONTACT = 1;
+
     private Group grpToWork;
     private EditText grpDlgTxt;
+    private AlertDialog.Builder alert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +64,6 @@ public class EditGroupsActivity extends ExpandableListActivity {
 
     /* call defined in xml */
     private void addGroupOnClick() {
-        AlertDialog.Builder alert;
-
         alert = new AlertDialog.Builder(this);
         grpDlgTxt = new EditText(this);
 
@@ -99,7 +101,6 @@ public class EditGroupsActivity extends ExpandableListActivity {
 
     /* call defined in xml */
     public void editGroupOnCLick(View view) {
-        AlertDialog.Builder alert;
         int pos;
 
         alert = new AlertDialog.Builder(this);
@@ -133,20 +134,20 @@ public class EditGroupsActivity extends ExpandableListActivity {
 
     private void deleteGroupDlgOnClick() {
         DatabaseHelper dbh = new DatabaseHelper(this);
-        dbh.deleteGroup(grpToWork.getId());
+        dbh.deleteGroup(grpToWork);
         update_exp_list_view();
     }
 
     /* call defined in xml */
     public void deleteGroupOnClick(View view) {
-        AlertDialog.Builder alert;
         int pos;
 
         pos = Integer.parseInt(view.getTag().toString());
         grpToWork = (Group) getExpandableListAdapter().getGroup(pos);
 
+
         alert = new AlertDialog.Builder(this);
-        alert.setView(grpDlgTxt);
+
         alert.setTitle(R.string.delete_qst);
         alert.setMessage(getString(R.string.delete_group_qst) + "\n" + "'" + grpToWork.getName() + "'");
         alert.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -162,7 +163,9 @@ public class EditGroupsActivity extends ExpandableListActivity {
             }
         });
         alert.create();
+        Log.d(TAG, "TEST before");
         alert.show();
+        Log.d(TAG, "after TEST");
     }
 
     @Override
@@ -205,12 +208,12 @@ public class EditGroupsActivity extends ExpandableListActivity {
         startActivityForResult(intent, EditGroupsActivity.GET_CONTACT);
     }
 
-    public void editMemberOnClick(View view) {
-
+    public void editMemberOnCLick(View view) {
+        return;
     }
 
     public void deleteMemberOnCLick(View view) {
-
+        return;
     }
 
     private void update_exp_list_view() {
