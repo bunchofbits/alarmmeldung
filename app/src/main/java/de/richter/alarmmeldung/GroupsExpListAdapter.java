@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import java.util.Map;
 
 public class GroupsExpListAdapter extends BaseExpandableListAdapter{
 
+    private static final String TAG = "GroupsExpListAdapter";
     private List<Map<String, Group>> groups;
     private List<List<Map<String, Member>>> children;
     private Context context;
@@ -52,7 +52,6 @@ public class GroupsExpListAdapter extends BaseExpandableListAdapter{
             List<Member> memberList = memberArray.get(i);
             if(memberList == null){
                 Log.w(MainActivity.TAG, "Could not find member " + i + " in memberarray!");
-                Toast.makeText(this.context, "Member " + i + " is null!", Toast.LENGTH_SHORT).show();
                 continue;
             }
             List<Map<String, Member>> singleMemberMapList = new ArrayList<Map<String, Member>>();
@@ -103,33 +102,37 @@ public class GroupsExpListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
+        Group group;
+        TextView tv;
+        ImageView iv;
+
         if (view == null) {
-            LayoutInflater infalInflater = (LayoutInflater) context
+            LayoutInflater loutInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = infalInflater.inflate(R.layout.group_view, null);
+            view = loutInflater.inflate(R.layout.group_view, null);
         }
-        Group grp = (Group) getGroup(i);
-        TextView tv = (TextView) view.findViewById(R.id.lst_group_txt);
-        tv.setText(grp.getName());
-        ImageView iv = (ImageView) view.findViewById(R.id.lst_group_edit);
+        group = (Group) getGroup(i);
+        tv = (TextView) view.findViewById(R.id.lst_group_txt);
+        tv.setText(group.getName());
+        iv = (ImageView) view.findViewById(R.id.lst_group_edit);
         if(iv != null) {
             iv.setTag("" + i);
         } else {
-            Log.w(MainActivity.TAG, "Could not find View!");
+            Log.w(TAG, "Could not find View!");
         }
 
         iv = (ImageView) view.findViewById(R.id.lst_group_delete);
         if(iv != null) {
             iv.setTag("" + i);
         } else {
-            Log.w(MainActivity.TAG, "Could not find View!");
+            Log.w(TAG, "Could not find View!");
         }
 
         iv = (ImageView) view.findViewById(R.id.lst_group_add_member);
         if(iv != null) {
             iv.setTag("" + i);
         } else {
-            Log.w(MainActivity.TAG, "Could not find View!");
+            Log.w(TAG, "Could not find View!");
         }
 
         return view;
@@ -137,14 +140,38 @@ public class GroupsExpListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public View getChildView(int i, int i2, boolean b, View view, ViewGroup viewGroup) {
+        Member member;
+        TextView tv;
+        ImageView iv;
+
         if (view == null) {
-            LayoutInflater infalInflater = (LayoutInflater) context
+            LayoutInflater loutInfalter = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = infalInflater.inflate(R.layout.member_view, null);
+            view = loutInfalter.inflate(R.layout.member_view, null);
         }
-        Member member = ((Map<String, Member>) getChild(i, i2)).get(Member.MEMBER_KEY);
-        TextView tv = (TextView) view.findViewById(R.id.lst_member_txt);
-        tv.setText(member.getName() + "\n" + member.getNumber());
+        member = (Member) getChild(i, i2);
+
+        tv = (TextView) view.findViewById(R.id.lst_member_txt);
+        if (tv != null) {
+            tv.setText(member.getName() + "\n" + member.getNumber());
+            tv.setTag("" + i + "," + i2);
+        } else {
+            Log.w(TAG, "Could not find View!");
+        }
+
+        iv = (ImageView) view.findViewById(R.id.lst_member_edit);
+        if (iv != null) {
+            iv.setTag("" + i + "," + i2);
+        } else {
+            Log.w(TAG, "Could not find View!");
+        }
+
+        iv = (ImageView) view.findViewById(R.id.lst_member_delete);
+        if (iv != null) {
+            iv.setTag("" + i + "," + i2);
+        } else {
+            Log.w(TAG, "Could not find View!");
+        }
         return view;
     }
 
