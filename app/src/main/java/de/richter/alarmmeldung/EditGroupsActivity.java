@@ -26,7 +26,7 @@ public class EditGroupsActivity extends ExpandableListActivity {
     private EditText grpDlgTxt;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_groups);
 
@@ -52,10 +52,9 @@ public class EditGroupsActivity extends ExpandableListActivity {
     }
 
     private void addGroupDlgOnClick() {
-       DatabaseHelper dbh = new DatabaseHelper(this);
-       String str = grpDlgTxt.getText().toString();
+        DatabaseHelper dbh = new DatabaseHelper(this);
+        String str = grpDlgTxt.getText().toString();
         dbh.addGroup(new Group(str));
-
         update_exp_list_view();
     }
 
@@ -95,7 +94,6 @@ public class EditGroupsActivity extends ExpandableListActivity {
         Group grp_update = grpToWork;
         grp_update.setName(grpDlgTxt.getText().toString());
         dbh.updateGroup(grp_update);
-
         update_exp_list_view();
     }
 
@@ -172,12 +170,12 @@ public class EditGroupsActivity extends ExpandableListActivity {
         Member mem;
         DatabaseHelper dbh;
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
+        switch (requestCode) {
             case EditGroupsActivity.GET_CONTACT:
-                if(resultCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     Uri contactData = data.getData();
                     Cursor cursor = getContentResolver().query(contactData, null, null, null, null);
-                    if(cursor.moveToFirst()) {
+                    if (cursor.moveToFirst()) {
                         String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                         String number = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
@@ -222,7 +220,7 @@ public class EditGroupsActivity extends ExpandableListActivity {
         DatabaseHelper dbh = new DatabaseHelper(this);
         groups = dbh.getAllGroups();
 
-        if(groups == null) {
+        if (groups == null) {
             groups = new ArrayList<Group>();
         }
         memberList = new ArrayList<List<Member>>();
