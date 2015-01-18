@@ -13,17 +13,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.richter.alarmmeldung.database.DatabaseHelper;
 
 public class EditGroupsActivity extends ExpandableListActivity {
 
+    public static final int GET_CONTACT = 1;
     private Group grpToWork;
     private EditText grpDlgTxt;
-    public static final int GET_CONTACT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -150,14 +150,13 @@ public class EditGroupsActivity extends ExpandableListActivity {
         alert = new AlertDialog.Builder(this);
         alert.setView(grpDlgTxt);
         alert.setTitle(R.string.delete_qst);
-        alert.setMessage("" + getString(R.string.delete_group_qst) + "\n" + "'" + grpToWork.getName() + "'");
+        alert.setMessage(getString(R.string.delete_group_qst) + "\n" + "'" + grpToWork.getName() + "'");
         alert.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 deleteGroupDlgOnClick();
             }
         });
-
         alert.setNegativeButton(R.string.abort, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -184,14 +183,14 @@ public class EditGroupsActivity extends ExpandableListActivity {
 
                         number = number.replaceAll("[a-zA-Z/\\[\\]\\-\\\\ ]+", "");
 
-                        Toast.makeText(this, "Selected Contact: ", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(this, "Name: '" + name + "'", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(this, "Number: '" + number + "'", Toast.LENGTH_SHORT).show();
                         dbh = new DatabaseHelper(this);
                         mem = new Member(name, number);
-                        // TODO: if( dbh.getMemberByNumber() == NULL ) { dbh.addMember(mem); }
-                        dbh.addMember(mem);
+                        if (dbh.getMemberByNumber(mem) == null) {
+                            dbh.addMember(mem);
+                        }
+                        mem = dbh.getMemberByNumber(mem);
                         dbh.addMemberToGroup(mem, grpToWork);
+                        update_exp_list_view();
                     }
                 }
                 break;
@@ -208,6 +207,14 @@ public class EditGroupsActivity extends ExpandableListActivity {
         startActivityForResult(intent, EditGroupsActivity.GET_CONTACT);
     }
 
+    public void editMemberOnClick(View view) {
+
+    }
+
+    public void deleteMemberOnCLick(View view) {
+
+    }
+
     private void update_exp_list_view() {
         ArrayList<Group> groups;
         ArrayList<Member> singleMemberList;
@@ -222,8 +229,9 @@ public class EditGroupsActivity extends ExpandableListActivity {
         for (int i = 0; i < groups.size(); i++) {
             singleMemberList = dbh.getMemberArrayFromGroup(groups.get(i).getId());
 
-            if(singleMemberList == null) // keine Member gefunden: leeres Array adden
+            if (singleMemberList == null) {
                 singleMemberList = new ArrayList<Member>();
+            }
 
             memberList.add(singleMemberList);
         }
