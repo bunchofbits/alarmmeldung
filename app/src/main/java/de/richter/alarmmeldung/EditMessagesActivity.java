@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import de.richter.alarmmeldung.database.DatabaseHelper;
+
 public class EditMessagesActivity extends ListActivity {
 
     Message msgToWork;
