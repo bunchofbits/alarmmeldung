@@ -50,7 +50,8 @@ public class MessagesHelper {
             Log.d(TAG, "Inserting Message '" + msg.getMessage() + "'");
             db.insert(MESSAGE_TBL_NAME, null, vals);
         } catch (SQLException ex) {
-            Log.e(TAG, "Error inserting new message!\n" + ex.getMessage());
+            Log.e(TAG, "Error inserting new message!");
+            Log.e(TAG, ex.getMessage());
             ret = false;
         }
         return ret;
@@ -88,7 +89,8 @@ public class MessagesHelper {
             DatabaseHelper.LogExec(TAG, sql);
             db.execSQL(sql);
         } catch (SQLException ex) {
-            Log.e(TAG, "Could not update Message!\n" + ex.getMessage());
+            Log.e(TAG, "Could not update Message!");
+            Log.e(TAG, ex.getMessage());
             ret = false;
         }
         return ret;
@@ -102,7 +104,8 @@ public class MessagesHelper {
             DatabaseHelper.LogExec(TAG, sql);
             db.execSQL(sql);
         } catch (SQLException ex) {
-            Log.e(TAG, "Could not delete Message!\n" + ex.getMessage());
+            Log.e(TAG, "Could not delete Message!");
+            Log.e(TAG, ex.getMessage());
             ret = false;
         }
         return ret;

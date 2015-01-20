@@ -24,17 +24,6 @@ public class GroupsHelper {
             + GROUP_COL_NAME + " VARCHAR NOT NULL"
             + " )";
 
-    public static final String MEM_GRP_TBL_NAME = "member_group_corr";
-    public static final String MEM_GRP_COL_ID = "ID";
-    public static final String MEM_GRP_COL_MEM = "member_id";
-    public static final String MEM_GRP_COL_GRP = "group_id";
-    public static final String MEM_GRP_TBL_CREATE = "CREATE TABLE IF NOT EXISTS "
-            + MEM_GRP_TBL_NAME + " ( "
-            + MEM_GRP_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + MEM_GRP_COL_MEM + " INTEGER NOT NULL, "
-            + MEM_GRP_COL_GRP + " INTEGER NOT NULL"
-            + " )";
-
     private Context context;
 
     public GroupsHelper(Context context) {
@@ -57,10 +46,10 @@ public class GroupsHelper {
         ContentValues vals = new ContentValues();
         vals.put(GROUP_COL_NAME, group.getName());
         try {
-            Log.d(TAG, "Inserting Message '" + group.getName() + "'");
             db.insert(GROUP_TBL_NAME, null, vals);
         } catch (SQLException ex) {
-            Log.e(TAG, "Error inserting new message!\n" + ex.getMessage());
+            Log.e(TAG, "Error inserting new message!");
+            Log.e(TAG, ex.getMessage());
             ret = false;
         }
         return ret;
@@ -117,7 +106,8 @@ public class GroupsHelper {
         try {
             db.execSQL(sql);
         } catch (SQLException ex) {
-            Log.e(TAG, "Error updating Group!\n" + ex.getMessage());
+            Log.e(TAG, "Error updating Group!");
+            Log.e(TAG, ex.getMessage());
             ret = false;
         }
         return ret;
@@ -131,7 +121,8 @@ public class GroupsHelper {
         try {
             db.execSQL(sql);
         } catch (SQLException ex) {
-            Log.e(TAG, "Error deleting Group!\n" + ex.getMessage());
+            Log.e(TAG, "Error deleting Group!");
+            Log.e(TAG, ex.getMessage());
             ret = false;
         }
         return ret;

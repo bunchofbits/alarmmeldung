@@ -1,8 +1,6 @@
 package de.richter.alarmmeldung.database;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -22,40 +20,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "alarmmeldung.db";
     public static final int DB_VERSION = 1;
 
-    /* **** TABLES **** */
-    // Member Table
-    public static final String MEMBER_TBL_NAME = "member";
-    public static final String MEMBER_COL_ID = "ID";
-    public static final String MEMBER_COL_NAME = "name";
-    public static final String MEMBER_COL_NUMBER = "number";
-    public static final String MEMBER_TBL_CREATE = "CREATE TABLE IF NOT EXISTS "
-            + MEMBER_TBL_NAME + " ( "
-            + MEMBER_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + MEMBER_COL_NAME + " VARCHAR NOT NULL, "
-            + MEMBER_COL_NUMBER + " VARCHAR NOT NULL UNIQUE"
-            + " )";
-
-    // Member - Group Correlation Table
-    public static final String MEM_GRP_TBL_NAME = "member_group_corr";
-    public static final String MEM_GRP_COL_ID = "ID";
-    public static final String MEM_GRP_COL_MEM = "member_id";
-    public static final String MEM_GRP_COL_GRP = "group_id";
-    public static final String MEM_GRP_TBL_CREATE = "CREATE TABLE IF NOT EXISTS "
-            + MEM_GRP_TBL_NAME + " ( "
-            + MEM_GRP_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + MEM_GRP_COL_MEM + " INTEGER NOT NULL, "
-            + MEM_GRP_COL_GRP + " INTEGER NOT NULL"
-            + " )";
-
     Context context;
     MessagesHelper messagesHelper;
     GroupsHelper groupsHelper;
+    MemberHelper memberHelper;
+    MemberGroupsAssignementHelper memGrpAssHelper;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
         this.messagesHelper = new MessagesHelper(context);
         this.groupsHelper = new GroupsHelper(context);
+        this.memberHelper = new MemberHelper(context);
+        this.memGrpAssHelper = new MemberGroupsAssignementHelper(context);
     }
 
     public static void LogExec(String TAG, String sql) {
@@ -64,31 +41,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.i(TAG, "creating Table " + MEMBER_TBL_NAME);
-        Log.d(TAG, "executing '" + MEMBER_TBL_CREATE + "' ");
-        db.execSQL(MEMBER_TBL_CREATE);
-
+        memberHelper.createTable(db);
         groupsHelper.createTable(db);
-
-        Log.i(TAG, "creating Table " + MEM_GRP_TBL_NAME);
-        Log.d(TAG, "executing '" + MEM_GRP_TBL_CREATE + "' ");
-        db.execSQL(MEM_GRP_TBL_CREATE);
-
+        memGrpAssHelper.createTable(db);
         messagesHelper.createTable(db);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.i(TAG, "Dropping all tables");
 
-        Log.i(TAG, "Dropping table " + MEMBER_TBL_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + MEMBER_TBL_NAME);
-
+        memberHelper.dropTable(db);
         groupsHelper.dropTable(db);
-
-        Log.i(TAG, "Dropping table " + MEM_GRP_TBL_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + MEM_GRP_TBL_NAME);
-
+        memGrpAssHelper.dropTable(db);
         messagesHelper.dropTable(db);
         onCreate(db);
     }
@@ -111,27 +77,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void addMember(Member member) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(MEMBER_COL_NAME, member.getName());
-        values.put(MEMBER_COL_NUMBER, member.getNumber());
-        db.insert(MEMBER_TBL_NAME, null, values);
+        if (!memberHelper.addMember(member, db)) {
+            Toast.makeText(context, "Error adding Member!", Toast.LENGTH_LONG).show();
+        }
+        db.close();
     }
 
     public void addMemberToGroup(Member member, Group group) {
         SQLiteDatabase db = getWritableDatabase();
-
-        if (member.getId() < 0 || group.getId() < 0) {
-            Log.e(TAG, "Insert into " + MEM_GRP_TBL_NAME + " caused by ID<0 for member or group!");
+        if (!memGrpAssHelper.addMemberToGroup(member, group, db)) {
+            Toast.makeText(context, "Error adding Member to Group!", Toast.LENGTH_LONG).show();
         }
-
-        String sql = "INSERT INTO " + MEM_GRP_TBL_NAME +
-                " ( " + MEM_GRP_COL_MEM + ", " + MEM_GRP_COL_GRP + " ) VALUES ( " +
-                member.getId() + ", " + group.getId() +
-                " )";
-
-        Log.d(TAG, "Executing: " + sql);
-        db.execSQL(sql);
-
         db.close();
     }
 
@@ -152,28 +108,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<Member> getAllMember() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor curs;
-        ArrayList<Member> ret;
-
-        curs = db.query(MEMBER_TBL_NAME, new String[]{MEMBER_COL_ID, MEMBER_COL_NAME, MEMBER_COL_NUMBER}, null, null, null, null, MEMBER_COL_ID);
-
-        if (!curs.moveToFirst()) {
-            db.close();
-            return null;
-        }
-
-        ret = new ArrayList<Member>();
-        do {
-            Member mem = new Member(
-                    Integer.parseInt(curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_ID))),
-                    curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_NAME)),
-                    curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_NUMBER)));
-            ret.add(mem);
-
-        } while (curs.moveToNext());
-
+        ArrayList<Member> member = memberHelper.getAllMember(db);
         db.close();
-        return ret;
+        return member;
     }
 
     public Group getGroupByID(int id) {
@@ -189,65 +126,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<Member> getMemberArrayFromGroup(Group group) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor curs;
         ArrayList<Member> member;
-        String sql = "SELECT " +
-                groupsHelper.GROUP_TBL_NAME + "." + groupsHelper.GROUP_COL_ID + ", " +
-                groupsHelper.GROUP_TBL_NAME + "." + groupsHelper.GROUP_COL_NAME + ", " +
-                MEMBER_TBL_NAME + "." + MEMBER_COL_ID + ", " +
-                MEMBER_TBL_NAME + "." + MEMBER_COL_NAME + ", " +
-                MEMBER_TBL_NAME + "." + MEMBER_COL_NUMBER +
-                " FROM " + MEM_GRP_TBL_NAME +
-                " JOIN " + MEMBER_TBL_NAME + " ON " + MEM_GRP_COL_MEM + " = " + MEMBER_TBL_NAME + "." + MEMBER_COL_ID +
-                " JOIN " + groupsHelper.GROUP_TBL_NAME + " ON " + MEM_GRP_COL_GRP + " = " + groupsHelper.GROUP_TBL_NAME + "." + groupsHelper.GROUP_COL_ID +
-                " AND " + MEM_GRP_COL_GRP + " = " + group.getId();
-
-        if (group == null) {
-            Log.e(TAG, "Parameter (group to search from) is null!");
-            return null;
+        member = memGrpAssHelper.getMemberWithAssignedGroup(group, db);
+        if (member == null) {
+            Toast.makeText(context, "Could not get Member for Group " + group, Toast.LENGTH_LONG).show();
         }
-
-        curs = db.rawQuery(sql, null);
-        Log.d(TAG, "Executing: " + sql);
-        if (!curs.moveToFirst()) {
-            db.close();
-            return null;
-        }
-        member = new ArrayList<Member>();
-        do {
-            Member mem = new Member(
-                    Integer.parseInt(curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_ID))),
-                    curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_NAME)),
-                    curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_NUMBER)));
-            member.add(mem);
-
-        } while (curs.moveToNext());
-
         db.close();
         return member;
     }
 
     public Member getMemberByNumber(Member toSearch) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor curs;
-        Member ret;
-
-        curs = db.query(MEMBER_TBL_NAME,
-                new String[]{MEMBER_COL_ID,
-                        MEMBER_COL_NAME, MEMBER_COL_NUMBER}, MEMBER_COL_NUMBER + " IS '" + toSearch.getNumber() + "'",
-                null, null, null, null);
-
-        if (!curs.moveToFirst()) {
-            db.close();
-            return null;
-        }
-        ret = new Member(
-                Integer.parseInt(curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_ID))),
-                curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_NAME)),
-                curs.getString(curs.getColumnIndexOrThrow(MEMBER_COL_NUMBER)));
-
+        Member member = memberHelper.getMemberByNumber(toSearch.getNumber(), db);
         db.close();
-        return ret;
+        return member;
     }
 
     public void updateMessage(Message new_msg) {
@@ -267,20 +159,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void updateMember(Member new_member) {
-        // TODO: test function!
-        Toast.makeText(context, "function updateMember() is actually not tested!", Toast.LENGTH_SHORT);
-        Log.w(TAG, "function updateMember() is actually not tested!");
         SQLiteDatabase db = getWritableDatabase();
-        String cmd =
-                "UPDATE " + MEMBER_TBL_NAME +
-                        " SET " +
-                        MEMBER_COL_NAME + " = '" + new_member.getName() + "', " +
-                        MEMBER_COL_NUMBER + " = '" + new_member.getNumber() + "'" +
-                        " WHERE " +
-                        GroupsHelper.GROUP_COL_ID + " = " + new_member.getId();
-
-        Log.d(TAG, "Executing: " + cmd);
-        db.execSQL(cmd);
+        if (!memberHelper.updateMember(new_member, db)) {
+            Toast.makeText(this.context, "Error updating Member!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 
@@ -300,15 +182,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteMember(int ID) {
-        // FIXME: only delete member, if not in any group assigned!
-        // TODO: test function!
-        Toast.makeText(context, "function deleteMember() is actually not tested!", Toast.LENGTH_SHORT);
-        Log.w(TAG, "function deleteMember() is actually not tested!");
+    public void deleteMember(Member member) {
         SQLiteDatabase db = getWritableDatabase();
-        String del_Str = "DELETE FROM " + MEMBER_TBL_NAME + " WHERE " + MEMBER_COL_ID + " = " + ID;
-        Log.d(TAG, "Executing: " + del_Str);
-        db.execSQL(del_Str);
+        if (!memberHelper.deleteMember(member, db)) {
+            Toast.makeText(this.context, "Error deleting Member!", Toast.LENGTH_LONG).show();
+        }
         db.close();
     }
 }
