@@ -24,6 +24,7 @@
     <string name="no_messages_added">Keine Nachrichten angelegt</string>
     <string name="delete_message_qst">Soll die Nachricht wirklich gelöscht werden?</string>
     <string name="delete_group_qst">Soll die Gruppe wirklich gelöscht werden?</string>
+    <string name="delete_member_from_group_qst">Soll das Mitglied wirklich aus der Gruppe gelöscht werden?</string>
     <string name="abort">Abbrechen</string>
     <string name="no_groups_added">Keine Gruppen angelegt</string>
 

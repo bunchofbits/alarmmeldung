@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -20,11 +21,37 @@ public class MainActivity extends Activity {
 
     public static final String TAG = "Alarmmeldung";
 
+    private int selectedGroupIndex;
+    private int selectedMessageIndex;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Spinner spinner = (Spinner) findViewById(R.id.grp_spn);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onGroupFocusChanged(position);
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                onGroupFocusChanged(-1);
+            }
+        });
+        spinner = (Spinner) findViewById(R.id.msg_spn);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onMessageFocusChanged(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                onMessageFocusChanged(-1);
+            }
+        });
         Button send_btn = (Button) findViewById(R.id.send_btn);
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,15 +96,37 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void onGroupFocusChanged(int position) {
+        this.selectedGroupIndex = position;
+        Log.d(TAG, "selectedGroupIndex: " + selectedGroupIndex);
+    }
+
+    private void onMessageFocusChanged(int position) {
+        this.selectedMessageIndex = position;
+        Log.d(TAG, "selectedMessageIndex: " + selectedMessageIndex);
+    }
+
     private void sendBtnOnClick(){
-        Toast.makeText(this, "NOT YET IMPLEMENTED!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "NOT YET IMPLEMENTED!", Toast.LENGTH_SHORT).show();
         DatabaseHelper dbh = new DatabaseHelper(this);
-        ArrayList<Member> members = dbh.getAllMember();
-        if(members == null) {
-            Log.d(TAG, "No Members added yet");
+        ArrayList<Group> groups = dbh.getAllGroups();
+        if (groups == null) {
+            Log.w(TAG, "Could not send SMS: no groups added!");
+            Toast.makeText(this, R.string.no_groups_added, Toast.LENGTH_SHORT).show();
             return;
         }
-        // TODO: send messages here
+        if (groups.get(selectedGroupIndex) == null) {
+            Log.e(TAG, "Could not send SMS: wrong GroupIndex!");
+            return;
+        }
+        ArrayList<Member> members = groups.get(selectedGroupIndex).getMember();
+        if(members == null) {
+            Log.d(TAG, "Could not send SMS: No Members added yet!");
+            return;
+        }
+        for (int i = 0; i < members.size(); i++)
+            Toast.makeText(this, "would send SMS to: " + members.get(i).toString(), Toast.LENGTH_SHORT).show();
+        // FIXME: send SMS here
     }
 
     /* get all Messages and Groups and fill the Spinners*/

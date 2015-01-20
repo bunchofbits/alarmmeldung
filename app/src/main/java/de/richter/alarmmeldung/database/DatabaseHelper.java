@@ -101,7 +101,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<Group> getAllGroups() {
         SQLiteDatabase db = getReadableDatabase();
+        ArrayList<Member> member;
         ArrayList<Group> groups = groupsHelper.getAllGroups(db);
+        for (int i = 0; groups != null && i < groups.size(); i++) {
+            addAssignedMemberToGroup(groups.get(i));
+        }
         db.close();
         return groups;
     }
@@ -115,7 +119,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Group getGroupByID(int id) {
         SQLiteDatabase db = getReadableDatabase();
+        ArrayList<Member> member;
         Group group = groupsHelper.getGroupByID(id, db);
+        if (group == null) {
+            Toast.makeText(context, "Could not get Group!", Toast.LENGTH_LONG).show();
+        }
+        addAssignedMemberToGroup(group);
+
         db.close();
         return group;
     }
@@ -124,15 +134,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return getMemberArrayFromGroup(getGroupByID(groupID));
     }
 
-    public ArrayList<Member> getMemberArrayFromGroup(Group group) {
+    private ArrayList<Member> getMemberArrayFromGroup(Group group) {
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<Member> member;
         member = memGrpAssHelper.getMemberWithAssignedGroup(group, db);
-        if (member == null) {
-            Toast.makeText(context, "Could not get Member for Group " + group, Toast.LENGTH_LONG).show();
-        }
         db.close();
         return member;
+    }
+
+    private void addAssignedMemberToGroup(Group group) {
+        if (group == null)
+            return;
+        ArrayList<Member> member = getMemberArrayFromGroup(group);
+        if (member == null)
+            return;
+        group.setMember(member);
     }
 
     public Member getMemberByNumber(Member toSearch) {
@@ -176,6 +192,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void deleteGroup(Group group) {
         SQLiteDatabase db = getWritableDatabase();
+        ArrayList<Member> member = group.getMember();
+        for (int i = 0; member != null && i < member.size(); i++) {
+            deleteMemberFromGroup(member.get(i), group);
+        }
         if (!groupsHelper.deleteGroup(group, db)) {
             Toast.makeText(context, "Error deleting Group!", Toast.LENGTH_LONG).show();
         }
@@ -188,5 +208,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(this.context, "Error deleting Member!", Toast.LENGTH_LONG).show();
         }
         db.close();
+    }
+
+    public void deleteMemberFromGroup(Member member, Group group) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (!memGrpAssHelper.deleteMemberGroupAssignment(member, group, db)) {
+            Toast.makeText(context, "Could not remove " + member + " from Group " + group, Toast.LENGTH_LONG).show();
+        }
+        // FIXME: remove member if not assigned anymore
     }
 }

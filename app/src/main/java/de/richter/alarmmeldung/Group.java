@@ -1,7 +1,6 @@
 package de.richter.alarmmeldung;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Group {
 
@@ -9,21 +8,21 @@ public class Group {
 
     private int id;
     private String name;
-    private List<Member> member;
+    private ArrayList<Member> member;
 
-    public Group(int id, String name, List<Member> member) {
+    public Group(int id, String name, ArrayList<Member> member) {
         this.id = id;
         this.name = name;
         this.member = member;
     }
 
-    public Group(int id, String name){
+    public Group(int id, String name) {
         this.id = id;
         this.name = name;
         this.member = null;
     }
 
-    public Group(String name, List<Member> member) {
+    public Group(String name, ArrayList<Member> member) {
         this.id = -1;
         this.name = name;
         this.member = member;
@@ -35,8 +34,8 @@ public class Group {
         this.member = null;
     }
 
-    public void addMember(Member member){
-        if(this.member == null)
+    public void addMember(Member member) {
+        if (this.member == null)
             this.member = new ArrayList<Member>();
 
         this.member.add(member);
@@ -58,11 +57,11 @@ public class Group {
         this.name = name;
     }
 
-    public List<Member> getMember() {
+    public ArrayList<Member> getMember() {
         return this.member;
     }
 
-    public void setMember(List<Member> member) {
+    public void setMember(ArrayList<Member> member) {
         this.member = member;
     }
 

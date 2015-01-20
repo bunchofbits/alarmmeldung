@@ -9,11 +9,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,8 @@ public class EditGroupsActivity extends ExpandableListActivity {
     public static final int GET_CONTACT = 1;
 
     private Group grpToWork;
+    private Member memToWork;
+
     private EditText grpDlgTxt;
     private AlertDialog.Builder alert;
 
@@ -145,7 +147,6 @@ public class EditGroupsActivity extends ExpandableListActivity {
         pos = Integer.parseInt(view.getTag().toString());
         grpToWork = (Group) getExpandableListAdapter().getGroup(pos);
 
-
         alert = new AlertDialog.Builder(this);
 
         alert.setTitle(R.string.delete_qst);
@@ -163,9 +164,7 @@ public class EditGroupsActivity extends ExpandableListActivity {
             }
         });
         alert.create();
-        Log.d(TAG, "TEST before");
         alert.show();
-        Log.d(TAG, "after TEST");
     }
 
     @Override
@@ -209,10 +208,46 @@ public class EditGroupsActivity extends ExpandableListActivity {
     }
 
     public void editMemberOnCLick(View view) {
+        Toast.makeText(this, "NOT YET IMPLEMENTED!", Toast.LENGTH_LONG).show();
+        return;
+    }
+
+    public void deleteMemberDlgOnCLick() {
+        DatabaseHelper dbh = new DatabaseHelper(this);
+        dbh.deleteMemberFromGroup(memToWork, grpToWork);
+        update_exp_list_view();
         return;
     }
 
     public void deleteMemberOnCLick(View view) {
+        int pos_grp;
+        int pos_mem;
+        String pos[];
+
+        pos = view.getTag().toString().split(",");
+        pos_grp = Integer.parseInt(pos[0]);
+        pos_mem = Integer.parseInt(pos[1]);
+
+        grpToWork = (Group) getExpandableListAdapter().getGroup(pos_grp);
+        memToWork = grpToWork.getMember().get(pos_mem);
+
+        alert = new AlertDialog.Builder(this);
+        alert.setTitle(R.string.delete_qst);
+        alert.setMessage(getString(R.string.delete_member_from_group_qst) + "\n\n" + memToWork.getName() + "\n" + memToWork.getNumber());
+        alert.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteMemberDlgOnCLick();
+            }
+        });
+        alert.setNegativeButton(R.string.abort, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alert.create();
+        alert.show();
         return;
     }
 

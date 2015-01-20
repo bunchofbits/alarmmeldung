@@ -107,4 +107,17 @@ public class MemberGroupsAssignementHelper {
         } while (curs.moveToNext());
         return member;
     }
+
+    public boolean deleteMemberGroupAssignment(Member member, Group group, SQLiteDatabase db) {
+        boolean ret = true;
+
+        try {
+            db.delete(MEM_GRP_TBL_NAME, MEM_GRP_COL_MEM + " = " + member.getId() + " AND " + MEM_GRP_COL_GRP + " = " + group.getId(), null);
+        } catch (SQLException ex) {
+            Log.e(TAG, "Could not get Member for Group " + group);
+            Log.e(TAG, ex.getMessage());
+            ret = false;
+        }
+        return ret;
+    }
 }
