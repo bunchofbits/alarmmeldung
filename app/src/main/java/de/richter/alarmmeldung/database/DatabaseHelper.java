@@ -25,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     GroupsHelper groupsHelper;
     MemberHelper memberHelper;
     MemberGroupsAssignementHelper memGrpAssHelper;
+    SMSOutboxHelper smsOutboxHelper;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -33,6 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         this.groupsHelper = new GroupsHelper(context);
         this.memberHelper = new MemberHelper(context);
         this.memGrpAssHelper = new MemberGroupsAssignementHelper(context);
+        this.smsOutboxHelper = new SMSOutboxHelper(context);
     }
 
     public static void LogExec(String TAG, String sql) {
@@ -45,7 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         groupsHelper.createTable(db);
         memGrpAssHelper.createTable(db);
         messagesHelper.createTable(db);
-
+        smsOutboxHelper.createTable(db);
     }
 
     @Override
@@ -56,6 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         groupsHelper.dropTable(db);
         memGrpAssHelper.dropTable(db);
         messagesHelper.dropTable(db);
+        smsOutboxHelper.dropTable(db);
         onCreate(db);
     }
 

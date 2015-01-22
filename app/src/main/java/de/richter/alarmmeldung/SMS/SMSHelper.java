@@ -31,6 +31,8 @@ public class SMSHelper implements Serializable {
         this.status_lout = status_lout;
     }
 
+    // TODO: add SMS to the database
+    // TODO: then add a timer to send messages from database
     public void sendSms(String text, String number) {
         ArrayList<String> smsList;
         View stat_vw;
