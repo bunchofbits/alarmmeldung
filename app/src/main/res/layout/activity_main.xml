@@ -2,77 +2,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="de.richter.alarmmeldung.app.MainActivity">
 
     <Button
+        android:id="@+id/send_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/send"
-        android:id="@+id/send_btn"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true"
+        android:text="@string/send" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/send_to"
         android:id="@+id/send_to_txt"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/msg_spn"
-        android:gravity="center" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/message"
-        android:id="@+id/char_count_txt"
-        android:singleLine="false"
-        android:password="false"
-        android:layout_below="@+id/send_to_txt"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/msg_spn"
-        android:layout_toLeftOf="@+id/grp_spn"
-        android:gravity="center" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/grp_spn"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:text="@string/send_to"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/char_count_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/msg_spn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/send_to_txt"
+        android:layout_toLeftOf="@+id/grp_spn"
+        android:gravity="center"
+        android:password="false"
+        android:singleLine="false"
+        android:text="@string/message"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Spinner
+        android:id="@+id/grp_spn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/send_to_txt" />
 
     <Spinner
+        android:id="@+id/msg_spn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/msg_spn"
-        android:layout_below="@+id/grp_spn"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/grp_spn"
         android:layout_toRightOf="@+id/send_to_txt" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/status_txt"
+    <LinearLayout
+        android:id="@+id/status_lout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/send_btn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/send_btn"
-        android:layout_alignRight="@+id/send_btn"
-        android:layout_alignEnd="@+id/send_btn"
-        android:layout_below="@+id/char_count_txt" />
+        android:layout_below="@+id/char_count_txt"
+        android:orientation="vertical"></LinearLayout>
 
 </RelativeLayout>

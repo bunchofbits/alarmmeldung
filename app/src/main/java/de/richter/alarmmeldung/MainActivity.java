@@ -1,6 +1,8 @@
 package de.richter.alarmmeldung;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,11 +12,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import de.richter.alarmmeldung.SMS.SMSHelper;
 import de.richter.alarmmeldung.database.DatabaseHelper;
 
 public class MainActivity extends Activity {
@@ -106,7 +111,8 @@ public class MainActivity extends Activity {
         Log.d(TAG, "selectedMessageIndex: " + selectedMessageIndex);
     }
 
-    private void sendBtnOnClick(){
+    private void sendBtnDlgOnClick() {
+        LinearLayout status_lout;
         Toast.makeText(this, "NOT YET IMPLEMENTED!", Toast.LENGTH_SHORT).show();
         DatabaseHelper dbh = new DatabaseHelper(this);
         ArrayList<Group> groups = dbh.getAllGroups();
@@ -124,9 +130,56 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Could not send SMS: No Members added yet!");
             return;
         }
-        for (int i = 0; i < members.size(); i++)
-            Toast.makeText(this, "would send SMS to: " + members.get(i).toString(), Toast.LENGTH_SHORT).show();
-        // FIXME: send SMS here
+        ArrayList<Message> messages = dbh.getAllMessages();
+        if (messages == null) {
+            Log.d(TAG, "Could not send SMS: No Messages added yet!");
+            return;
+        }
+        if (messages.get(selectedMessageIndex) == null) {
+            Log.e(TAG, "Could not send SMS: wrong MessageIndex!");
+            return;
+        }
+        status_lout = (LinearLayout) findViewById(R.id.status_lout);
+        if (status_lout.getChildCount() > 0) {
+            status_lout.removeAllViews();
+        }
+        SMSHelper smsHelper = new SMSHelper(this, status_lout);
+
+        for (int i = 0; i < members.size(); i++) {
+            View vw = getLayoutInflater().inflate(R.layout.sms_stats_row_view, null);
+            ((TextView) vw.findViewById(R.id.sms_status_name_txt)).setText(members.get(i).getName());
+            ((TextView) vw.findViewById(R.id.sms_status_number_txt)).setText(members.get(i).getNumber());
+            ((TextView) vw.findViewById(R.id.sms_status_sent_txt)).setText("not sent");
+            ((TextView) vw.findViewById(R.id.sms_status_delivered_txt)).setText("not delivered");
+            status_lout.addView(vw);
+            Toast.makeText(this, "send SMS '" + messages.get(selectedMessageIndex) +
+                    "'\n\nto: " + members.get(i).toString(), Toast.LENGTH_SHORT).show();
+            smsHelper.sendSms(messages.get(0).getMessage(), members.get(i).getNumber());
+        }
+    }
+
+    private void sendBtnOnClick() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle(R.string.send_qst);
+        alert.setCancelable(false);
+        alert.setMessage(R.string.send_sms_qst);
+
+        alert.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                sendBtnDlgOnClick();
+            }
+        });
+        alert.setNegativeButton(R.string.abort, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        alert.create();
+        alert.show();
     }
 
     /* get all Messages and Groups and fill the Spinners*/

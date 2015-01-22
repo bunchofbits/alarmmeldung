@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.richter.alarmmeldung" >
+    package="de.richter.alarmmeldung">
+
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:label="@string/edit_messages" android:name="de.richter.alarmmeldung.EditMessagesActivity"> </activity>
 
-        <activity android:label="@string/edit_groups" android:name="de.richter.alarmmeldung.EditGroupsActivity"> </activity>
+            <receiver android:name="com.sendit.receivers.SendBroadcastReceiver">
+                <intent-filter>
+                    <action android:name="SMS_SENT" />
+                </intent-filter>
+            </receiver>
+            <receiver android:name="com.sendit.receivers.DeliveryBroadcastReceiver">
+                <intent-filter>
+                    <action android:name="SMS_DELIVERED" />
+                </intent-filter>
+            </receiver>
+        </activity>
+        <activity
+            android:name="de.richter.alarmmeldung.EditMessagesActivity"
+            android:label="@string/edit_messages"></activity>
+        <activity
+            android:name="de.richter.alarmmeldung.EditGroupsActivity"
+            android:label="@string/edit_groups"></activity>
     </application>
 
 </manifest>
