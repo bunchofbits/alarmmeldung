@@ -1,4 +1,4 @@
-package de.richter.alarmmeldung;
+package de.richter.alarmmeldung.Core;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -15,13 +15,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import de.richter.alarmmeldung.R;
 import de.richter.alarmmeldung.database.DatabaseHelper;
 
 public class EditMessagesActivity extends ListActivity {
 
     Message msgToWork;
     EditText msgDlgTxt;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +41,8 @@ public class EditMessagesActivity extends ListActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.add_message:
                 addMessageOnClick();
                 return true;
@@ -50,9 +51,9 @@ public class EditMessagesActivity extends ListActivity {
         }
     }
 
-    private void dlgAddMsgOnClick(){
+    private void dlgAddMsgOnClick() {
         String msg = msgDlgTxt.getText().toString();
-        if(msg.isEmpty()){
+        if (msg.isEmpty()) {
             Toast.makeText(this, R.string.no_text_entered, Toast.LENGTH_LONG).show();
             return;
         }
@@ -61,9 +62,9 @@ public class EditMessagesActivity extends ListActivity {
         update_list_view();
     }
 
-    public void addMessageOnClick(){
+    public void addMessageOnClick() {
         AlertDialog.Builder alert;
-        SmsTextWatcher watcher;
+        SMSTextWatcher watcher;
 
         msgDlgTxt = new EditText(this);
         msgDlgTxt.setMaxLines(5);
@@ -81,7 +82,7 @@ public class EditMessagesActivity extends ListActivity {
         alert = new AlertDialog.Builder(this);
         alert.setTitle(R.string.edit_message);
 
-        watcher = new SmsTextWatcher(charCountTxt);
+        watcher = new SMSTextWatcher(charCountTxt);
         charCountTxt.setText(
                 watcher.recalculate_remaining_chars(msgDlgTxt.getText()));
 
@@ -109,10 +110,10 @@ public class EditMessagesActivity extends ListActivity {
         update_list_view();
     }
 
-    private void dlgEditMsgOnClick(){
+    private void dlgEditMsgOnClick() {
         Message new_msg = new Message();
         String msg = msgDlgTxt.getText().toString();
-        if(msg.isEmpty()){
+        if (msg.isEmpty()) {
             Toast.makeText(this, R.string.no_text_entered, Toast.LENGTH_LONG).show();
             return;
         }
@@ -128,11 +129,11 @@ public class EditMessagesActivity extends ListActivity {
     public void editMessageOnCLick(View v) {
 
         AlertDialog.Builder alert;
-        SmsTextWatcher watcher;
+        SMSTextWatcher watcher;
         int pos;
 
         pos = Integer.parseInt("" + v.getTag());
-        msgToWork = ((MessagesListAdapter)getListAdapter()).getMessage(pos);
+        msgToWork = ((MessagesListAdapter) getListAdapter()).getMessage(pos);
 
         msgDlgTxt = new EditText(this);
         msgDlgTxt.setMaxLines(5);
@@ -151,7 +152,7 @@ public class EditMessagesActivity extends ListActivity {
         alert.setTitle(R.string.edit_message);
         alert.setCancelable(false);
 
-        watcher = new SmsTextWatcher(charCountTxt);
+        watcher = new SMSTextWatcher(charCountTxt);
         charCountTxt.setText(
                 watcher.recalculate_remaining_chars(msgDlgTxt.getText()));
 
@@ -179,7 +180,7 @@ public class EditMessagesActivity extends ListActivity {
         update_list_view();
     }
 
-    private void dlgDelMsgOnClick(){
+    private void dlgDelMsgOnClick() {
         DatabaseHelper dbh = new DatabaseHelper(this);
         Log.i(MainActivity.TAG, "Deleting Message" + msgToWork);
         dbh.deleteMessage(msgToWork);
@@ -187,9 +188,9 @@ public class EditMessagesActivity extends ListActivity {
     }
 
     /* call defined in xml */
-    public void deleteMessageOnCLick(View v){
+    public void deleteMessageOnCLick(View v) {
         int pos = Integer.parseInt("" + v.getTag());
-        msgToWork = ((MessagesListAdapter)getListAdapter()).getMessage(pos);
+        msgToWork = ((MessagesListAdapter) getListAdapter()).getMessage(pos);
         String rly_del_str = getString(R.string.delete_message_qst);
         String msg_str = getString(R.string.message);
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -217,7 +218,7 @@ public class EditMessagesActivity extends ListActivity {
     private void update_list_view() {
         DatabaseHelper dbh = new DatabaseHelper(this);
         ArrayList<Message> messages = dbh.getAllMessages();
-        if(messages == null) {
+        if (messages == null) {
             messages = new ArrayList<Message>(); // set empty List
         }
         setListAdapter(new MessagesListAdapter(this, messages));

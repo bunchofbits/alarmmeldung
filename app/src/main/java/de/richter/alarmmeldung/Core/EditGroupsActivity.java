@@ -1,4 +1,4 @@
-package de.richter.alarmmeldung;
+package de.richter.alarmmeldung.Core;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.richter.alarmmeldung.R;
 import de.richter.alarmmeldung.database.DatabaseHelper;
 
 public class EditGroupsActivity extends ExpandableListActivity {
@@ -185,16 +186,15 @@ public class EditGroupsActivity extends ExpandableListActivity {
 
                         dbh = new DatabaseHelper(this);
                         mem = new Member(name, number);
-                        if (dbh.getMemberByNumber(mem) == null) {
+                        if (dbh.getMemberByNumber(Integer.parseInt(mem.getNumber())) == null) {
                             dbh.addMember(mem);
                         }
-                        mem = dbh.getMemberByNumber(mem);
+                        mem = dbh.getMemberByNumber(Integer.parseInt(mem.getNumber()));
                         dbh.addMemberToGroup(mem, grpToWork);
                         update_exp_list_view();
                     }
                 }
                 break;
-
             default:
                 // Do nothing
         }

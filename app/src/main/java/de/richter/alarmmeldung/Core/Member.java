@@ -1,4 +1,4 @@
-package de.richter.alarmmeldung;
+package de.richter.alarmmeldung.Core;
 
 public class Member {
 
@@ -26,28 +26,28 @@ public class Member {
         this.number = null;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getId() {
         return this.id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getNumber() {
         return this.number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     @Override

@@ -8,9 +8,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import de.richter.alarmmeldung.Group;
-import de.richter.alarmmeldung.Member;
-import de.richter.alarmmeldung.Message;
+import de.richter.alarmmeldung.Core.Group;
+import de.richter.alarmmeldung.Core.Member;
+import de.richter.alarmmeldung.Core.Message;
+import de.richter.alarmmeldung.Core.SMS;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -94,6 +95,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void addSms(SMS sms) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (!smsOutboxHelper.addSMS(sms, db)) {
+            Toast.makeText(context, "Error adding SMS to outbox!", Toast.LENGTH_LONG).show();
+        }
+    }
+
     public ArrayList<Message> getAllMessages() {
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<Message> messages;
@@ -154,9 +162,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         group.setMember(member);
     }
 
-    public Member getMemberByNumber(Member toSearch) {
+    public Member getMemberByNumber(int number) {
         SQLiteDatabase db = getReadableDatabase();
-        Member member = memberHelper.getMemberByNumber(toSearch.getNumber(), db);
+        Member member = memberHelper.getMemberByNumber(number, db);
         db.close();
         return member;
     }

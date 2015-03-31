@@ -9,7 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import de.richter.alarmmeldung.Group;
+import de.richter.alarmmeldung.Core.Group;
 
 public class GroupsHelper {
 

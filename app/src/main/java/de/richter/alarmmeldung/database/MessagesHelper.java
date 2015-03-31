@@ -9,7 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import de.richter.alarmmeldung.Message;
+import de.richter.alarmmeldung.Core.Message;
 
 public class MessagesHelper {
 

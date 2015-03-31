@@ -1,4 +1,4 @@
-package de.richter.alarmmeldung.SMS;
+package de.richter.alarmmeldung.Core;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -8,15 +8,10 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 
-public class SendBroadcastReciever extends BroadcastReceiver {
+public class DeliveryBroadcastReciever extends BroadcastReceiver {
 
-    public static final String TAG = "SendBroadcastReciever";
+    public static final String TAG = "DeliveryBroadcastReciever";
 
-
-    private void setStatus() {
-        // TODO: Update Status in the MainActivity
-        return;
-    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -26,19 +21,19 @@ public class SendBroadcastReciever extends BroadcastReceiver {
         SMSHelper smsHelper;
 
         b = intent.getExtras();
-        number = b.getString(SMSHelper.KEY_RECV_NUMBER);
-        smsHelper = (SMSHelper) b.getSerializable(SMSHelper.KEY_CALLER_OBJECT);
+        number = b.getString(SendTimer.KEY_RECV_NUMBER);
+        smsHelper = (SMSHelper) b.getSerializable(SendTimer.KEY_CALLER_OBJECT);
 
         resCode = getResultCode();
         switch (resCode) {
             case Activity.RESULT_OK:
-                Log.d(TAG, "SMS Sent to " + number);
+                Log.d(TAG, "SMS Delivered to " + number);
                 break;
             case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
             case SmsManager.RESULT_ERROR_NO_SERVICE:
             case SmsManager.RESULT_ERROR_NULL_PDU:
             case SmsManager.RESULT_ERROR_RADIO_OFF:
-                Log.i(TAG, "SMS sending failed!");
+                Log.i(TAG, "Delivering SMS failed!");
             default:
                 Log.e(TAG, "unknown Resultcode! " + resCode);
         }

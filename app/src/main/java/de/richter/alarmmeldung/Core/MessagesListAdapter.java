@@ -1,4 +1,4 @@
-package de.richter.alarmmeldung;
+package de.richter.alarmmeldung.Core;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,23 +12,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.richter.alarmmeldung.R;
+
 public class MessagesListAdapter extends BaseAdapter {
 
 
     Context context;
     List<Map<String, Message>> data;
 
-    public MessagesListAdapter(Context context, ArrayList<Message> messages){
+    public MessagesListAdapter(Context context, ArrayList<Message> messages) {
         this.context = context;
         this.data = convert_arrayList_to_MapList(messages);
     }
 
-    public MessagesListAdapter(Context context, List<Map<String, Message>> messages){
+    public MessagesListAdapter(Context context, List<Map<String, Message>> messages) {
         this.context = context;
         this.data = messages;
     }
 
-    public List<Map<String, Message>> convert_arrayList_to_MapList(ArrayList<Message> messages){
+    public List<Map<String, Message>> convert_arrayList_to_MapList(ArrayList<Message> messages) {
         List<Map<String, Message>> ret = new ArrayList<Map<String, Message>>();
         for (int i = 0; i < messages.size(); i++) {
             Map<String, Message> curMap = new HashMap<String, Message>();
@@ -48,8 +50,7 @@ public class MessagesListAdapter extends BaseAdapter {
         return data.get(i);
     }
 
-    public Message getMessage(int i)
-    {
+    public Message getMessage(int i) {
         return ((HashMap<String, Message>) getItem(i)).get(Message.MESSAGE_KEY);
     }
 
@@ -62,7 +63,7 @@ public class MessagesListAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         Message message = getMessage(i);
 
-        if(view == null){
+        if (view == null) {
             LayoutInflater inflater =
                     (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.message_view, null);

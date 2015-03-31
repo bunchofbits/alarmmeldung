@@ -1,4 +1,4 @@
-package de.richter.alarmmeldung;
+package de.richter.alarmmeldung.Core;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import de.richter.alarmmeldung.SMS.SMSHelper;
+import de.richter.alarmmeldung.R;
 import de.richter.alarmmeldung.database.DatabaseHelper;
 
 public class MainActivity extends Activity {
@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
             status_lout.addView(vw);
             Toast.makeText(this, "send SMS '" + messages.get(selectedMessageIndex) +
                     "'\n\nto: " + members.get(i).toString(), Toast.LENGTH_SHORT).show();
-            smsHelper.sendSms(messages.get(0).getMessage(), members.get(i).getNumber());
+            smsHelper.sendSms(messages.get(0).getMessage(), members.get(i));
         }
     }
 

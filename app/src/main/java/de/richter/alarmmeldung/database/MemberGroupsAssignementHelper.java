@@ -8,8 +8,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import de.richter.alarmmeldung.Group;
-import de.richter.alarmmeldung.Member;
+import de.richter.alarmmeldung.Core.Group;
+import de.richter.alarmmeldung.Core.Member;
 
 public class MemberGroupsAssignementHelper {
 

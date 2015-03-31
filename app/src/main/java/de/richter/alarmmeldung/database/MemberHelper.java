@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import de.richter.alarmmeldung.Member;
+import de.richter.alarmmeldung.Core.Member;
 
 public class MemberHelper {
 
@@ -82,7 +82,7 @@ public class MemberHelper {
         return member;
     }
 
-    public Member getMemberByNumber(String number, SQLiteDatabase db) {
+    public Member getMemberByNumber(int number, SQLiteDatabase db) {
         Cursor curs;
         Member ret;
 

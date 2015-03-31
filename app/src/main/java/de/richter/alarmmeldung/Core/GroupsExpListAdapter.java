@@ -1,4 +1,4 @@
-package de.richter.alarmmeldung;
+package de.richter.alarmmeldung.Core;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,26 +14,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GroupsExpListAdapter extends BaseExpandableListAdapter{
+import de.richter.alarmmeldung.R;
+
+public class GroupsExpListAdapter extends BaseExpandableListAdapter {
 
     private static final String TAG = "GroupsExpListAdapter";
     private List<Map<String, Group>> groups;
     private List<List<Map<String, Member>>> children;
     private Context context;
 
-    public GroupsExpListAdapter(Context context, ArrayList<Group> groups, ArrayList<List<Member>> member){
+    public GroupsExpListAdapter(Context context, ArrayList<Group> groups, ArrayList<List<Member>> member) {
         this.context = context;
         this.groups = convert_groupArrayList_to_GroupMapList(groups);
         this.children = convert_memberArrayList_to_MemberMapList(member);
     }
+
     public GroupsExpListAdapter(Context context, List<Map<String, Group>> groups, List<List<Map<String, Member>>> children) {
         this.context = context;
         this.children = children;
         this.groups = groups;
     }
 
-    private List<Map<String, Group>> convert_groupArrayList_to_GroupMapList(ArrayList<Group> groups){
-        if(groups == null)
+    private List<Map<String, Group>> convert_groupArrayList_to_GroupMapList(ArrayList<Group> groups) {
+        if (groups == null)
             return null;
         ArrayList<Map<String, Group>> mapList = new ArrayList<Map<String, Group>>();
         for (int i = 0; i < groups.size(); i++) {
@@ -44,13 +47,13 @@ public class GroupsExpListAdapter extends BaseExpandableListAdapter{
         return mapList;
     }
 
-    private List<List<Map<String, Member>>> convert_memberArrayList_to_MemberMapList(ArrayList<List<Member>> memberArray){
-        if(memberArray == null)
+    private List<List<Map<String, Member>>> convert_memberArrayList_to_MemberMapList(ArrayList<List<Member>> memberArray) {
+        if (memberArray == null)
             return null;
         List<List<Map<String, Member>>> memberMapList = new ArrayList<List<Map<String, Member>>>();
         for (int i = 0; i < memberArray.size(); i++) {
             List<Member> memberList = memberArray.get(i);
-            if(memberList == null){
+            if (memberList == null) {
                 Log.w(MainActivity.TAG, "Could not find member " + i + " in memberarray!");
                 continue;
             }
@@ -72,7 +75,7 @@ public class GroupsExpListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public int getChildrenCount(int i) {
-       return children.get(i).size();
+        return children.get(i).size();
     }
 
     @Override
@@ -115,21 +118,21 @@ public class GroupsExpListAdapter extends BaseExpandableListAdapter{
         tv = (TextView) view.findViewById(R.id.lst_group_txt);
         tv.setText(group.getName());
         iv = (ImageView) view.findViewById(R.id.lst_group_edit);
-        if(iv != null) {
+        if (iv != null) {
             iv.setTag("" + i);
         } else {
             Log.w(TAG, "Could not find View!");
         }
 
         iv = (ImageView) view.findViewById(R.id.lst_group_delete);
-        if(iv != null) {
+        if (iv != null) {
             iv.setTag("" + i);
         } else {
             Log.w(TAG, "Could not find View!");
         }
 
         iv = (ImageView) view.findViewById(R.id.lst_group_add_member);
-        if(iv != null) {
+        if (iv != null) {
             iv.setTag("" + i);
         } else {
             Log.w(TAG, "Could not find View!");
