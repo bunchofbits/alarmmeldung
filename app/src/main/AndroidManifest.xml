@@ -17,12 +17,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <receiver android:name="com.sendit.receivers.SendBroadcastReceiver">
+            <receiver android:name=".Core$SendBroadcastReceiver">
                 <intent-filter>
                     <action android:name="SMS_SENT" />
                 </intent-filter>
             </receiver>
-            <receiver android:name="com.sendit.receivers.DeliveryBroadcastReceiver">
+            <receiver android:name=".Core$DeliveryBroadcastReceiver">
                 <intent-filter>
                     <action android:name="SMS_DELIVERED" />
                 </intent-filter>

@@ -68,10 +68,19 @@
         android:id="@+id/status_lout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/send_btn"
+        android:layout_above="@+id/debug_btn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/char_count_txt"
         android:orientation="vertical"></LinearLayout>
+
+    <Button
+        android:id="@+id/debug_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/send_btn"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="DEBUG" />
 
 </RelativeLayout>
