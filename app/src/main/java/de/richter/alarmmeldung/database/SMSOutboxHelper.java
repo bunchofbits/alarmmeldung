@@ -22,7 +22,7 @@ public class SMSOutboxHelper {
             SMSOUT_TBL_NAME + " ( " +
             SMSOUT_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             SMSOUT_COL_MESSAGE + " VARCHAR NOT NULL, " +
-            SMSOUT_COL_MEMBER_ID + " INTEGER NOT NULL ) ) ";
+            SMSOUT_COL_MEMBER_ID + " INTEGER NOT NULL )";
 
     private Context context;
 
@@ -73,7 +73,7 @@ public class SMSOutboxHelper {
 
         dbh = new DatabaseHelper(this.context);
         do {
-            mem = dbh.getMemberByNumber(Integer.parseInt(curs.getString(curs.getColumnIndexOrThrow(SMSOUT_COL_MEMBER_ID))));
+            mem = dbh.getMemberByNumber(curs.getString(curs.getColumnIndexOrThrow(SMSOUT_COL_MEMBER_ID)));
             smses.add(new SMS(
                     Integer.parseInt(curs.getString(curs.getColumnIndexOrThrow((SMSOUT_COL_ID)))),
                     curs.getString(curs.getColumnIndexOrThrow(SMSOUT_COL_MESSAGE)),

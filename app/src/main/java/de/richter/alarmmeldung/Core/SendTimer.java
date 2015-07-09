@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.LinearLayout;
@@ -15,6 +16,8 @@ public class SendTimer extends IntentService {
     private static final String TAG = "SendTimer";
     private static final String ACTION_SMS_SENT = "SMS_SENT";
     private static final String ACTION_SMS_DELIVERED = "SMS_DELIVERED";
+
+    private CountDownTimer timer;
     private SmsManager smsManager;
     private LinearLayout status_lout;
     private Context context;
@@ -29,6 +32,7 @@ public class SendTimer extends IntentService {
         this.smsManager = SmsManager.getDefault();
         this.status_lout = status_lout;
         this.context = context;
+        this.timer = null;
     }
 
     @Override
@@ -59,6 +63,7 @@ public class SendTimer extends IntentService {
     }
 
     public void start() {
-        startService(new Intent(this, SendTimer.class));
+        startService(new Intent(this.context, SendTimer.class));
+        Log.d(TAG, "start called)");
     }
 }

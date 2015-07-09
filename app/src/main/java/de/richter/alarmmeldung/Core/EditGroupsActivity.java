@@ -186,10 +186,10 @@ public class EditGroupsActivity extends ExpandableListActivity {
 
                         dbh = new DatabaseHelper(this);
                         mem = new Member(name, number);
-                        if (dbh.getMemberByNumber(Integer.parseInt(mem.getNumber())) == null) {
+                        if (dbh.getMemberByNumber(mem.getNumber()) == null) {
                             dbh.addMember(mem);
                         }
-                        mem = dbh.getMemberByNumber(Integer.parseInt(mem.getNumber()));
+                        mem = dbh.getMemberByNumber(mem.getNumber());
                         dbh.addMemberToGroup(mem, grpToWork);
                         update_exp_list_view();
                     }

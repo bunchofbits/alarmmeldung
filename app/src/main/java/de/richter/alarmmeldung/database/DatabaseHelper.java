@@ -39,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public static void LogExec(String TAG, String sql) {
-        Log.d(TAG, "Executing: " + sql);
+        //Log.d(TAG, "Executing: " + sql);
     }
 
     @Override
@@ -61,6 +61,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         messagesHelper.dropTable(db);
         smsOutboxHelper.dropTable(db);
         onCreate(db);
+    }
+
+    public void recreateDatabase() {
+        onUpgrade(getWritableDatabase(), 1, 1);
     }
 
     public void addMessage(Message msg) {
@@ -162,7 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         group.setMember(member);
     }
 
-    public Member getMemberByNumber(int number) {
+    public Member getMemberByNumber(String number) {
         SQLiteDatabase db = getReadableDatabase();
         Member member = memberHelper.getMemberByNumber(number, db);
         db.close();

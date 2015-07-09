@@ -82,7 +82,7 @@ public class MemberHelper {
         return member;
     }
 
-    public Member getMemberByNumber(int number, SQLiteDatabase db) {
+    public Member getMemberByNumber(String number, SQLiteDatabase db) {
         Cursor curs;
         Member ret;
 
