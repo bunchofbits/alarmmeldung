@@ -4,20 +4,18 @@ import android.content.Context;
 import android.telephony.SmsManager;
 import android.widget.LinearLayout;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import de.richter.alarmmeldung.database.DatabaseHelper;
 
 
-public class SMSHelper implements Serializable {
+public class SMSHelper {
 
     public static final String TAG = "SMSHelper";
 
     private Context context;
     private SmsManager smsManager;
     private SendTimer sendTimer;
-
 
     public SMSHelper(Context context, LinearLayout status_lout) {
         this.context = context;
