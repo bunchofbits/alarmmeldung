@@ -64,6 +64,27 @@ public class MainActivity extends Activity {
                 sendBtnOnClick();
             }
         });
+
+        Button dbgBtn = (Button) findViewById(R.id.debug_btn);
+        dbgBtn.setVisibility(Button.VISIBLE);
+        dbgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addDebugOnClick();
+            }
+        });
+    }
+
+    private void addDebugOnClick() {
+        DatabaseHelper dbh = new DatabaseHelper(this);
+        dbh.recreateDatabase();
+
+        dbh.addMember(new Member("Simon Richter", "+4917661548379"));
+        dbh.addMessage(new Message("Debugmessage - you should not receive that message! If you do, please let me know: +49176 615 483 79"));
+        dbh.addMessage(new Message("Debugmessage Nr. 2 This message is too long for a single SMS so this message will be sent in 2 parts - you should not receive that messages! If you do, please let me know: +49 176 615 483 79"));
+        dbh.addGroup(new Group("dbgGrp"));
+        dbh.addMemberToGroup(dbh.getAllMember().get(0), dbh.getAllGroups().get(0));
+        update_messages_and_groups();
     }
 
     @Override
@@ -103,12 +124,10 @@ public class MainActivity extends Activity {
 
     private void onGroupFocusChanged(int position) {
         this.selectedGroupIndex = position;
-        Log.d(TAG, "selectedGroupIndex: " + selectedGroupIndex);
     }
 
     private void onMessageFocusChanged(int position) {
         this.selectedMessageIndex = position;
-        Log.d(TAG, "selectedMessageIndex: " + selectedMessageIndex);
     }
 
     private void sendBtnDlgOnClick() {
